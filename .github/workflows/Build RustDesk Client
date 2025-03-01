@@ -1,0 +1,29 @@
+name: Build RustDesk Client
+
+on:
+   push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    - name: Build
+      run: cargo build --release
+
+    - name: Set environment variables
+      run: |
+        echo "RENDEZVOUS_SERVER=${{ secrets.RENDEZVOUS_SERVER }}" >> $GITHUB_ENV
+        echo "RS_PUB_KEY=${{ secrets.RS_PUB_KEY }}" >> $GITHUB_ENV
+
+    - name: Build with custom env vars
+      run: cargo build --release --features "custom-env-vars"
